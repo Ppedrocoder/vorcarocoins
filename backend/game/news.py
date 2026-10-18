@@ -13,6 +13,10 @@ from .models import NewsItem
 FEEDS = (
     ("G1 Política", "https://g1.globo.com/rss/g1/politica/"),
     ("Agência Brasil", "https://agenciabrasil.ebc.com.br/rss/politica/feed.xml"),
+    (
+        "Google Notícias",
+        "https://news.google.com/rss/search?q=elei%C3%A7%C3%B5es+Brasil&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
+    ),
 )
 KEYWORDS = re.compile(
     r"\b(eleição|eleições|eleitoral|votação|urna|urnas|tse|candidato|candidata|"
@@ -67,6 +71,14 @@ def _read_feed(source, url):
     return items
 
 
+def _unique_news(items):
+    unique = {}
+    for item in items:
+        key = item["url"] or item["title"].casefold()
+        unique.setdefault(key, item)
+    return list(unique.values())
+
+
 def _database_news():
     return [
         {
@@ -93,6 +105,7 @@ def latest_news():
         except (ElementTree.ParseError, TimeoutError, URLError):
             continue
 
+    items = _unique_news(items)
     items.sort(
         key=lambda item: item["published_at"].timestamp() if item["published_at"] else 0,
         reverse=True,
