@@ -91,6 +91,13 @@ class NewsOut(Schema):
     published_at: Optional[datetime] = None
 
 
+class RankingOut(Schema):
+    rank: int
+    name: str
+    daily_coins: int
+    claimed_at: datetime
+
+
 def player_out(p: Player) -> PlayerOut:
     p = Player.objects.select_related("bet").prefetch_related("purchases").get(pk=p.pk)
     b = getattr(p, "bet", None)
@@ -181,6 +188,23 @@ def news(request):
     return latest_news()
 
 
+@api.get("/ranking", response=list[RankingOut])
+def ranking(request):
+    players = Player.objects.filter(
+        daily_coins__gt=0,
+        daily_claimed_at__isnull=False,
+    ).order_by("-daily_coins", "daily_claimed_at", "pk")[:10]
+    return [
+        {
+            "rank": index,
+            "name": player.name,
+            "daily_coins": player.daily_coins,
+            "claimed_at": player.daily_claimed_at,
+        }
+        for index, player in enumerate(players, start=1)
+    ]
+
+
 @api.get("/shop", response=list[ItemOut])
 def shop(request):
     return ITEMS
@@ -197,7 +221,9 @@ def daily(request):
             raise HttpError(409, "Você já resgatou hoje. Volte amanhã.")
         p.balance += DAILY_COINS
         p.last_claim = today
-        p.save(update_fields=["balance", "last_claim"])
+        p.daily_coins += DAILY_COINS
+        p.daily_claimed_at = timezone.now()
+        p.save(update_fields=["balance", "last_claim", "daily_coins", "daily_claimed_at"])
     return player_out(p)
 
 

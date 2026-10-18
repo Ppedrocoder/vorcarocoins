@@ -12,6 +12,8 @@ class Player(models.Model):
     balance = models.PositiveBigIntegerField(default=START_BALANCE)
     badge = models.BooleanField(default=False)  # Eleitor Master
     last_claim = models.DateField(null=True, blank=True)  # último resgate das moedas diárias
+    daily_coins = models.PositiveBigIntegerField(default=0)
+    daily_claimed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -3,6 +3,7 @@ import { api, MOCK } from "./api";
 import DemoBar from "./DemoBar";
 import Sprite from "./Sprite";
 import NewsPhone from "./NewsPhone";
+import RankingPhone from "./RankingPhone";
 import Mascot from "./Mascot";
 import NftCard from "./NftCard";
 import Shop from "./Shop";
@@ -23,6 +24,7 @@ function Shell({ children, bet, winner, equipped = [] }) {
         <Countdown />
         {children}
         {MOCK && <DemoBar />}
+        <RankingPhone />
         <NewsPhone />
         <p className="tiny center">Jogo de diversão. Vorcarocoins não têm valor real e não são dinheiro.</p>
       </main>
@@ -74,7 +76,10 @@ export default function App() {
     localStorage.setItem("vc_token", r.token);
     setMe(r.player);
   });
-  const claim = () => run(async () => setMe(await api("/daily", { method: "POST" })));
+  const claim = () => run(async () => {
+    setMe(await api("/daily", { method: "POST" }));
+    window.dispatchEvent(new Event("vc:ranking-refresh"));
+  });
   const buy = (id) => run(async () => setMe(await api("/shop/buy", { method: "POST", body: { item_id: id } })));
   const equip = (id, equipped) => run(async () => setMe(await api("/shop/equip", { method: "POST", body: { item_id: id, equipped } })));
   const bet = () => run(async () => setMe(await api("/bet", { method: "POST", body: { candidate: pick } })));

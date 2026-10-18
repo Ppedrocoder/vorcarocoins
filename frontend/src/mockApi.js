@@ -27,18 +27,24 @@ try { db = JSON.parse(localStorage.getItem(K)) || init(); } catch { db = init();
 const save = () => { try { localStorage.setItem(K, JSON.stringify(db)); } catch {} };
 const fail = (status, msg) => { const e = new Error(msg); e.status = status; throw e; };
 const out = () => { const p = db.player; return { name: p.name, balance: p.balance, badge: p.badge, bet: p.bet || null, can_claim: !!p.bet && p.last_claim !== hoje(), owned: p.owned || [], equipped: p.equipped || [] }; };
+const ranking = () => {
+  const p = db.player;
+  if (!p?.daily_coins) return [];
+  return [{ rank: 1, name: p.name, daily_coins: p.daily_coins, claimed_at: p.daily_claimed_at }];
+};
 
 export async function mockApi(path, { method = "GET", body } = {}) {
   if (path === "/election") return { ...db.el };
   if (path === "/news") return NEWS;
   if (path === "/shop") return ITEMS;
   if (path === "/players" && method === "POST") {
-    db.player = { name: (body.name || "").trim().slice(0, 16) || "JOGADOR", balance: 134000, badge: false, bet: null, owned: [], equipped: [], last_claim: null };
+    db.player = { name: (body.name || "").trim().slice(0, 16) || "JOGADOR", balance: 134000, badge: false, bet: null, owned: [], equipped: [], last_claim: null, daily_coins: 0, daily_claimed_at: null };
     save();
     return { token: "mock", player: out() };
   }
   if (!db.player) fail(401, "Unauthorized");
   if (path === "/me") return out();
+  if (path === "/ranking") return ranking();
   if (path === "/bet") {
     if (db.el.winner || db.el.counted_pct > 0) fail(409, "As apostas fecharam: a apuração já começou.");
     const p = db.player;
@@ -53,7 +59,8 @@ export async function mockApi(path, { method = "GET", body } = {}) {
   if (path === "/daily") {
     if (!p.bet) fail(400, "Faça sua aposta para receber as moedas diárias.");
     if (p.last_claim === hoje()) fail(409, "Você já resgatou hoje. Volte amanhã.");
-    p.balance += 2500; p.last_claim = hoje(); save(); return out();
+    p.balance += 2500; p.daily_coins = (p.daily_coins || 0) + 2500; p.last_claim = hoje();
+    p.daily_claimed_at = new Date().toISOString(); save(); return out();
   }
   const it = ITEMS.find((i) => i.id === body?.item_id);
   if (path === "/shop/buy") {
