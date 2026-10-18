@@ -8,6 +8,7 @@ import Mascot from "./Mascot";
 import NftCard from "./NftCard";
 import Shop from "./Shop";
 import Countdown from "./Countdown.jsx";
+import ElectionMap from "./ElectionMap";
 
 const fmt = (n) => n.toLocaleString("pt-BR");
 const pct = (n) => n.toFixed(2).replace(".", ",") + "%";
@@ -22,6 +23,7 @@ function Shell({ children, bet, winner, equipped = [] }) {
         <h1>VORCAROCOINS</h1>
         <p className="sub">Aposta fictícia · 2º turno 2026</p>
         <Countdown />
+        <ElectionMap />
         {children}
         {MOCK && <DemoBar />}
         <RankingPhone />

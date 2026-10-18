@@ -65,4 +65,16 @@ button.ghost{background:var(--panel2);box-shadow:0 -4px #566c86,0 4px var(--bg),
 .shop button{padding:8px 10px;font-size:9px}
 .countdown{display:flex;flex-direction:column;align-items:center;gap:6px;margin:0 4px 8px;padding:12px;background:var(--bg);outline:4px solid var(--gold);text-align:center}
 .count{color:var(--gold);font-size:14px}
+.map-widget{text-align:center;margin:18px 4px}
+.map-btn{background:var(--panel2);box-shadow:0 -4px #566c86,0 4px #0b1025,-4px 0 #566c86,4px 0 #0b1025}
+.map-panel{margin-top:14px;padding:14px;background:var(--panel);text-align:left;box-shadow:0 -4px #fff,0 4px #fff,-4px 0 #fff,4px 0 #fff,8px 8px #0006}
+.map-panel h2{font-size:11px;color:var(--gold);margin:0}
+.close-map{padding:6px 8px;font-size:8px}
+.map-legend{display:flex;justify-content:center;gap:12px;margin:10px 0;font-size:8px}
+.map-dot{display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:-1px}
+.lula-dot{background:var(--red)}.flavio-dot{background:#2878c8}
+.pixel-map{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(8,34px);gap:3px;max-width:420px;margin:12px auto;padding:8px;background:#111827;image-rendering:pixelated}
+.state{display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;font-size:8px;font-weight:bold;text-shadow:1px 1px #000;outline:2px solid #111827}
+.state small{font-size:6px;font-weight:normal;line-height:1}
+.state.lula{background:var(--red)}.state.flavio{background:#2878c8}
 .nft .tag+.tag{margin-left:6px}

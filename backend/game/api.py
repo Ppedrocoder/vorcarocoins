@@ -13,7 +13,7 @@ from ninja.security import HttpBearer
 from .models import Bet, Election, NewsItem, Player, Purchase
 from .news import latest_news
 from .shop import CATALOG, DAILY_COINS, ITEMS
-from .tse import latest_first_round
+from .tse import latest_first_round, latest_state_map
 
 
 class TokenAuth(HttpBearer):
@@ -75,6 +75,14 @@ class ElectionOut(Schema):
     flavio_pct: float
     counted_pct: float
     first_round: Optional[dict] = None
+
+class StateMapOut(Schema):
+    source: str
+    status: str
+    round: int
+    election_code: str
+    updated_at: Optional[datetime] = None
+    states: list[dict]
 
 class ResultIn(Schema):
     winner: Optional[Cand] = None
@@ -147,6 +155,16 @@ def election(request):
         "counted_pct": el.counted_pct,
         "first_round": first_round,
     }
+
+
+@api.get("/election/map", response=StateMapOut)
+def election_map(request):
+    election = Election.current()
+    round_number = 2 if election.winner or election.counted_pct > 0 else 1
+    try:
+        return latest_state_map(round_number)
+    except (RuntimeError, ValueError) as exc:
+        raise HttpError(502, str(exc)) from exc
 
 
 @api.post("/bet", auth=auth, response=PlayerOut)

@@ -10,6 +10,11 @@ Jogo fictício: o usuário começa com 134.000 vorcarocoins e aposta tudo em Lul
 - Rode o comando `python manage.py makemigrations`
 - Rode o comando `python manage.py migrate`
 - Rode o comando `python manage.py runserver`
+- O endpoint `GET /api/election/map` consulta os dados estaduais do 1º turno
+  publicados pelo TSE para alimentar o mapa pixelado do Brasil.
+- Quando a apuração do jogo começar, o endpoint passa a consultar a eleição
+  6258 (2º turno) e atualiza o mapa automaticamente quando o TSE publicar os
+  arquivos estaduais. Até lá, mantém os dados do 1º turno visíveis.
 
 ## Frontend
 
@@ -17,4 +22,3 @@ Jogo fictício: o usuário começa com 134.000 vorcarocoins e aposta tudo em Lul
 - Rode o comando `npm install`
 - Crie a .env dentro da pasta frontend baseado na .env.example
 - Rode o comando `npm run dev`
-

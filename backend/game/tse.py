@@ -1,4 +1,5 @@
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from threading import Lock
 from urllib.error import HTTPError, URLError
@@ -9,10 +10,24 @@ TSE_FIRST_ROUND_URL = (
     "https://resultados.tse.jus.br/oficial/ele2026/6257/"
     "dados/br/br-c0001-e006257-u.json"
 )
+TSE_ELECTION_CODES = {1: "6257", 2: "6258"}
+TSE_STATE_CODES = (
+    ("ac", "Acre"), ("al", "Alagoas"), ("ap", "Amapá"), ("am", "Amazonas"),
+    ("ba", "Bahia"), ("ce", "Ceará"), ("df", "Distrito Federal"),
+    ("es", "Espírito Santo"), ("go", "Goiás"), ("ma", "Maranhão"),
+    ("mt", "Mato Grosso"), ("ms", "Mato Grosso do Sul"), ("mg", "Minas Gerais"),
+    ("pa", "Pará"), ("pb", "Paraíba"), ("pr", "Paraná"), ("pe", "Pernambuco"),
+    ("pi", "Piauí"), ("rj", "Rio de Janeiro"), ("rn", "Rio Grande do Norte"),
+    ("rs", "Rio Grande do Sul"), ("ro", "Rondônia"), ("rr", "Roraima"),
+    ("sc", "Santa Catarina"), ("sp", "São Paulo"), ("se", "Sergipe"),
+    ("to", "Tocantins"),
+)
 CACHE_SECONDS = 60
 _cache = None
 _cache_at = 0.0
 _cache_lock = Lock()
+_state_cache = {}
+_state_cache_at = {}
 
 
 def _number(value, default=0.0):
@@ -57,6 +72,41 @@ def _parse(payload):
     }
 
 
+def _state_url(code, round_number):
+    election_code = TSE_ELECTION_CODES[round_number]
+    return (
+        f"https://resultados.tse.jus.br/oficial/ele2026/{election_code}/"
+        f"dados/{code}/{code}-c0001-e00{election_code}-u.json"
+    )
+
+
+def _parse_state(payload, code, name):
+    candidates = _candidate_rows(payload)
+    lula = next((c for c in candidates if "LULA" in c["name"].upper()), None)
+    flavio = next((c for c in candidates if "FLAVIO" in c["name"].upper()), None)
+    if not lula or not flavio:
+        raise ValueError(f"Candidatos não encontrados em {code.upper()}")
+    winner = "lula" if lula["votes"] > flavio["votes"] else "flavio"
+    return {
+        "code": code,
+        "name": name,
+        "winner": winner,
+        "lula_votes": lula["votes"],
+        "flavio_votes": flavio["votes"],
+        "counted_pct": _number(payload.get("s", {}).get("pstn")),
+    }
+
+
+def _fetch_state(code, name, round_number):
+    request = Request(
+        _state_url(code, round_number),
+        headers={"User-Agent": "VorcaroCoins/1.0"},
+    )
+    with urlopen(request, timeout=4) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    return _parse_state(payload, code, name)
+
+
 def _tse_datetime(date_value, time_value):
     if not date_value or not time_value:
         return None
@@ -91,3 +141,62 @@ def latest_first_round():
         _cache = _parse(payload)
         _cache_at = now
         return _cache
+
+
+def latest_state_map(round_number=1):
+    global _state_cache, _state_cache_at
+    if round_number not in TSE_ELECTION_CODES:
+        raise ValueError("Turno eleitoral inválido")
+    now = datetime.now().timestamp()
+    with _cache_lock:
+        if round_number in _state_cache and now - _state_cache_at[round_number] < CACHE_SECONDS:
+            return _state_cache[round_number]
+
+    states = []
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = {
+            executor.submit(_fetch_state, code, name, round_number)
+            for code, name in TSE_STATE_CODES
+        }
+        for future in as_completed(futures):
+            try:
+                states.append(future.result())
+            except (HTTPError, URLError, TimeoutError, json.JSONDecodeError, ValueError):
+                continue
+    states.sort(key=lambda state: state["code"])
+
+    if not states:
+        if round_number in _state_cache:
+            return {
+                **_state_cache[round_number],
+                "status": "stale",
+            }
+        if round_number == 2:
+            first_round = latest_state_map(1)
+            if first_round["states"]:
+                return {
+                    **first_round,
+                    "status": "fallback",
+                    "requested_round": 2,
+                }
+        return {
+            "source": "TSE",
+            "status": "pending",
+            "round": round_number,
+            "election_code": TSE_ELECTION_CODES[round_number],
+            "updated_at": None,
+            "states": [],
+        }
+
+    result = {
+        "source": "TSE",
+        "status": "live",
+        "election_code": TSE_ELECTION_CODES[round_number],
+        "round": round_number,
+        "updated_at": datetime.now().isoformat(),
+        "states": states,
+    }
+    with _cache_lock:
+        _state_cache[round_number] = result
+        _state_cache_at[round_number] = now
+    return result

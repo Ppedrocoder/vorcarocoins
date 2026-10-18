@@ -6,6 +6,9 @@ const NEWS = [
   { id: 3, title: "Flávio Bolsonaro e Lula vão ao segundo turno nas eleições de 2026", source: "Compre Rural", url: "https://comprerural.com/flavio-bolsonaro-e-lula-vao-ao-segundo-turno-para-presidente-nas-eleicoes-de-2026/", published_at: "2026-10-04T20:40:00-03:00" },
   { id: 4, title: "Quando será o segundo turno das eleições? Veja a data", source: "Movimento Econômico", url: "https://movimentoeconomico.com.br/politica/eleicoes-2026/2026/10/04/quando-sera-o-segundo-turno-das-eleicoes-veja-a-data/", published_at: "2026-10-04T18:00:00-03:00" },
 ];
+const MAP_STATES = ["ac", "al", "am", "ap", "ba", "ce", "df", "es", "go", "ma", "mg", "ms", "mt", "pa", "pb", "pe", "pi", "pr", "rj", "rn", "ro", "rr", "rs", "sc", "se", "sp", "to"].map((code, index) => ({
+  code, name: code.toUpperCase(), winner: index % 3 === 0 ? "lula" : "flavio", lula_votes: 100000 + index * 1000, flavio_votes: 110000 + index * 900, counted_pct: 100,
+}));
 const ITEMS = [
   { id: "oculos", name: "Óculos escuros", slot: "eyes", price: 2000, side: null },
   { id: "bone", name: "Boné", slot: "head", price: 3000, side: null },
@@ -36,6 +39,10 @@ const ranking = () => {
 export async function mockApi(path, { method = "GET", body } = {}) {
   if (path === "/election") return { ...db.el };
   if (path === "/news") return NEWS;
+  if (path === "/election/map") {
+    const round = db.el.counted_pct > 0 || db.el.winner ? 2 : 1;
+    return { source: "TSE", status: "mock", round, election_code: round === 2 ? "6258" : "6257", updated_at: new Date().toISOString(), states: MAP_STATES };
+  }
   if (path === "/shop") return ITEMS;
   if (path === "/players" && method === "POST") {
     db.player = { name: (body.name || "").trim().slice(0, 16) || "JOGADOR", balance: 134000, badge: false, bet: null, owned: [], equipped: [], last_claim: null, daily_coins: 0, daily_claimed_at: null };
