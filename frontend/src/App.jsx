@@ -9,6 +9,7 @@ import NftCard from "./NftCard";
 import Shop from "./Shop";
 import Countdown from "./Countdown.jsx";
 import ElectionMap from "./ElectionMap";
+import FirstVisitGuide from "./FirstVisitGuide";
 
 const fmt = (n) => n.toLocaleString("pt-BR");
 const pct = (n) => n.toFixed(2).replace(".", ",") + "%";
@@ -53,6 +54,7 @@ export default function App() {
   const [pick, setPick] = useState(null);
   const [err, setErr] = useState("");
   const [ready, setReady] = useState(false);
+  const [showGuide, setShowGuide] = useState(() => localStorage.getItem("vc_guide_seen") !== "1");
 
   const load = useCallback(async () => {
     try {
@@ -73,6 +75,7 @@ export default function App() {
   }, [load]);
 
   const run = async (fn) => { setErr(""); try { await fn(); } catch (e) { setErr(e.message); } };
+  const closeGuide = () => setShowGuide(false);
   const join = (name) => run(async () => {
     const r = await api("/players", { method: "POST", body: { name } });
     localStorage.setItem("vc_token", r.token);
@@ -86,14 +89,15 @@ export default function App() {
   const equip = (id, equipped) => run(async () => setMe(await api("/shop/equip", { method: "POST", body: { item_id: id, equipped } })));
   const bet = () => run(async () => setMe(await api("/bet", { method: "POST", body: { candidate: pick } })));
 
-  if (!ready) return <Shell><p className="tiny center">Carregando…</p></Shell>;
-  if (!me) return <Shell>{err && <p className="lose center" role="alert">{err}</p>}<Entry onJoin={join} /></Shell>;
+  if (!ready) return <Shell><p className="tiny center">Carregando…</p>{showGuide && <FirstVisitGuide onClose={closeGuide} />}</Shell>;
+  if (!me) return <Shell>{err && <p className="lose center" role="alert">{err}</p>}<Entry onJoin={join} />{showGuide && <FirstVisitGuide onClose={closeGuide} />}</Shell>;
 
   const closed = el && (el.counted_pct > 0 || el.winner);
   const b = me.bet;
 
   return (
     <Shell bet={b?.candidate} winner={el?.winner} equipped={me.equipped}>
+      {showGuide && <FirstVisitGuide onClose={closeGuide} />}
       <div className="box">
         <div className="row between"><span>{me.name}</span><span className="bal"><Sprite name="coin" px={3} /> {fmt(me.balance)}</span></div>
         {me.badge && <p className="center"><span className="badge"><Sprite name="medal" px={3} /> Eleitor Master</span></p>}

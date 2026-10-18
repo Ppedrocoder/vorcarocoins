@@ -78,3 +78,13 @@ button.ghost{background:var(--panel2);box-shadow:0 -4px #566c86,0 4px var(--bg),
 .state small{font-size:6px;font-weight:normal;line-height:1}
 .state.lula{background:var(--red)}.state.flavio{background:#2878c8}
 .nft .tag+.tag{margin-left:6px}
+.guide-backdrop{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:16px;background:#0b1025cc}
+.guide-panel{width:min(430px,100%);padding:22px;background:var(--panel);text-align:center;box-shadow:0 -4px #fff,0 4px #fff,-4px 0 #fff,4px 0 #fff,8px 8px #0008}
+.guide-progress{display:flex;gap:6px;justify-content:center;margin-bottom:16px}
+.guide-progress i{width:28px;height:6px;background:var(--panel2)}
+.guide-progress i.active{background:var(--gold)}
+.guide-icon{font-size:42px;line-height:1.2;margin:8px 0}
+.guide-panel h2{margin:8px 0;color:var(--gold);font-size:14px}
+.guide-panel p{margin:12px auto;line-height:1.8}
+.guide-actions{margin-top:20px}
+.guide-actions button{padding:10px 12px;font-size:9px}
