@@ -1,0 +1,6 @@
+[
+ {"model":"game.newsitem","pk":1,"fields":{"title":"Quando será o segundo turno das eleições? Veja a data","source":"TNH1","url":"https://www.tnh1.com.br/noticia/nid/quando-sera-o-segundo-turno-das-eleicoes-veja-a-data/","published_at":"2026-10-05T09:23:00-03:00"}},
+ {"model":"game.newsitem","pk":2,"fields":{"title":"Flávio Bolsonaro e Lula vão disputar segundo turno pela Presidência","source":"Tribuna de Jundiaí","url":"https://tribunadejundiai.com.br/politica/eleicoes-2026/flavio-bolsonaro-e-lula-vao-disputar-segundo-turno-pela-presidencia-da-republica/","published_at":"2026-10-04T21:00:00-03:00"}},
+ {"model":"game.newsitem","pk":3,"fields":{"title":"Flávio Bolsonaro e Lula vão ao segundo turno nas eleições de 2026","source":"Compre Rural","url":"https://comprerural.com/flavio-bolsonaro-e-lula-vao-ao-segundo-turno-para-presidente-nas-eleicoes-de-2026/","published_at":"2026-10-04T20:40:00-03:00"}},
+ {"model":"game.newsitem","pk":4,"fields":{"title":"Quando será o segundo turno das eleições? Veja a data","source":"Movimento Econômico","url":"https://movimentoeconomico.com.br/politica/eleicoes-2026/2026/10/04/quando-sera-o-segundo-turno-das-eleicoes-veja-a-data/","published_at":"2026-10-04T18:00:00-03:00"}}
+]

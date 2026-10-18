@@ -1,0 +1,2 @@
+django>=6.1,<7
+django-ninja>=1.7,<2

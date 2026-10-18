@@ -1,0 +1,62 @@
+:root{color-scheme:dark;--bg:#1a1c2c;--panel:#29366f;--panel2:#333c57;--ink:#f4f4f4;--gold:#ffcd75;--red:#b13e53;--green:#38b764;--dim:#94b0c2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:11px/1.8 "Press Start 2P",ui-monospace,monospace;
+background-image:linear-gradient(#ffffff08 2px,transparent 2px),linear-gradient(90deg,#ffffff08 2px,transparent 2px);background-size:32px 32px}
+main{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:18px;color:var(--gold);text-align:center;margin:8px 0 4px;text-shadow:3px 3px 0 var(--red)}
+.sub{text-align:center;color:var(--dim);margin-bottom:20px}
+.box{background:var(--panel);margin:16px 4px;padding:16px;box-shadow:0 -4px #fff,0 4px #fff,-4px 0 #fff,4px 0 #fff,8px 8px #0006}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center}.between{justify-content:space-between}
+.center{text-align:center}.tiny{font-size:9px;color:var(--dim)}.bal{font-size:16px;color:var(--gold)}
+button,input{font:inherit;color:var(--ink)}
+button{background:var(--green);border:0;padding:12px 14px;cursor:pointer;box-shadow:0 -4px #0a2,0 4px #063,-4px 0 #0a2,4px 0 #063}
+button:active{transform:translateY(4px)}button:disabled{background:#566c86;box-shadow:none;cursor:not-allowed}
+button:focus-visible,input:focus{outline:4px solid var(--gold)}
+input{background:var(--bg);border:0;padding:12px;width:100%;max-width:280px;outline:4px solid #566c86}
+.cand{flex:1 1 220px;background:var(--panel2);padding:16px 8px;box-shadow:0 -4px #566c86,0 4px #566c86,-4px 0 #566c86,4px 0 #566c86}
+.cand[aria-pressed=true]{background:#3b5dc9;box-shadow:0 -4px var(--gold),0 4px var(--gold),-4px 0 var(--gold),4px 0 var(--gold)}
+.sprite{image-rendering:pixelated;shape-rendering:crispEdges;vertical-align:middle}
+.bar{height:28px;background:var(--bg);display:flex;margin:10px 0;outline:4px solid #566c86}
+.bar i{display:block;height:100%;transition:width .4s steps(8)}.l{background:var(--red)}.f{background:var(--green)}
+.win{color:var(--green)}.lose{color:#ef7d57}
+.badge{display:inline-flex;align-items:center;gap:8px;background:#5d275d;padding:8px 12px;box-shadow:0 -4px var(--gold),0 4px var(--gold),-4px 0 var(--gold),4px 0 var(--gold)}
+.blink{animation:b 1s steps(2) infinite}@keyframes b{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.blink{animation:none}.bar i{transition:none}}
+.phone-btn{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;padding:10px;background:var(--panel2);box-shadow:0 -4px var(--gold),0 4px var(--gold),-4px 0 var(--gold),4px 0 var(--gold)}
+.phone{position:fixed;right:16px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:20;width:min(260px,calc(100vw - 32px));height:min(420px,60vh);display:flex;flex-direction:column;background:#94b0c2;padding:14px 10px 18px;box-shadow:0 -4px #fff,0 4px #fff,-4px 0 #fff,4px 0 #fff,8px 8px #0008}
+.phone-notch{width:40px;height:6px;background:var(--panel2);margin:0 auto 10px}
+.phone-screen{flex:1;overflow-y:auto;background:var(--bg);padding:10px}
+.phone-screen h2{font-size:10px;color:var(--gold);margin:0 0 10px}
+.phone-screen ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.phone-screen a{display:block;padding:8px;background:var(--panel);color:var(--ink);text-decoration:none;font-size:9px;line-height:1.7}
+.phone-screen a:hover,.phone-screen a:focus-visible{background:#3b5dc9;outline:2px solid var(--gold)}
+
+.stage{display:grid;grid-template-columns:1fr minmax(0,640px) 1fr;grid-template-areas:"l m r";gap:8px;align-items:start;max-width:1200px;margin:0 auto}
+.stage main{grid-area:m;margin:0;width:100%}
+.side{position:sticky;top:24px;display:flex;justify-content:center;padding-top:80px}
+.side.lula{grid-area:l}.side.flavio{grid-area:r}
+.mascot{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:9px;max-width:140px}
+.mascot .sprite{width:96px;height:auto}
+.side.lula .who{color:#e8707f}.side.flavio .who{color:var(--green)}
+.tag{background:var(--gold);color:var(--bg);padding:4px 6px;font-size:8px}
+@media (max-width:900px){
+  .stage{grid-template-columns:1fr 1fr;grid-template-areas:"l r" "m m"}
+  .side{position:static;padding-top:16px}
+  .mascot .sprite{width:64px}
+}
+button.ghost{background:var(--panel2);box-shadow:0 -4px #566c86,0 4px var(--bg),-4px 0 #566c86,4px 0 var(--bg)}
+.demo{margin:16px 4px;padding:12px;background:var(--panel2);outline:4px dashed #566c86}
+.nft{margin:16px 4px;padding:16px;background:var(--panel2);text-align:center;box-shadow:0 -4px var(--blue),0 4px var(--blue),-4px 0 var(--blue),4px 0 var(--blue),8px 8px #0006}
+.nft-art{background:var(--bg);padding:12px;margin:10px auto;width:fit-content;outline:4px solid #566c86}
+.nft p{margin:6px 0}
+.nft.gold{box-shadow:0 -4px var(--gold),0 4px var(--gold),-4px 0 var(--gold),4px 0 var(--gold),8px 8px #0006}
+.nft.gold .nft-art{outline-color:var(--gold)}
+.nft.burned .nft-art{filter:grayscale(1);opacity:.6}
+.daily{margin-bottom:12px}
+.shop{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.shop li{display:flex;align-items:center;gap:12px;background:var(--panel2);padding:8px}
+.shop li>span{flex:1}
+.shop button{padding:8px 10px;font-size:9px}
+.countdown{display:flex;flex-direction:column;align-items:center;gap:6px;margin:0 4px 8px;padding:12px;background:var(--bg);outline:4px solid var(--gold);text-align:center}
+.count{color:var(--gold);font-size:14px}
+.nft .tag+.tag{margin-left:6px}
